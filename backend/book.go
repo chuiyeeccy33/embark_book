@@ -1,21 +1,26 @@
+//main.go
 package main
 
-import "fmt"
-import "rsc.io/quote"
-import "github.com/gin-gonic/gin" // gin framework
-import "net/http" // display http status
-
-
+import (
+    "github.com/gin-gonic/gin"
+)
 
 func main() {
-	// fmt.Println("Hello, World!")
-	// fmt.Println(quote.Go())
+	// initialize the book data
+	FetchBooksFromAPI()
 
-	//declare router
-	router := gin.Default()
-	// get book listing
-	router.GET("/listing", func(c *gin.Context) {
-		// c.JSON(http.StatusOK, listing)
-		
-	})
+    r := gin.Default()
+
+    // API routes
+    r.GET("/books", listBooks)
+    r.POST("/books", createBook)
+    r.PUT("/books/:id", updateBook)
+    r.DELETE("/books/:id", deleteBook)
+    r.POST("/books/reset", resetBooks)
+
+    // Serve static files (frontend)
+    // r.Static("/static", "./static")
+
+    // Run the server
+    r.Run(":8080") // Listen on port 8080
 }
