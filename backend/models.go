@@ -52,14 +52,3 @@ func FetchBooksFromAPI() {
 
 	fmt.Println("Fetched and populated books:", books)
 }
-
-func generateNextID() int {
-	if len(books) == 0 {
-		// Start with ID "1" if there are no books
-		return 1
-	}
-
-	// Find the last book's ID and convert it to an integer
-	lastBook := books[len(books)-1]
-	return lastBook.ID + 1
-}

@@ -27,7 +27,7 @@
                         <input v-model="createdBook.genre" placeholder="Genre" />
                         <input v-model="createdBook.desc" placeholder="Description" />
                         <input v-model="createdBook.isbn" placeholder="Isbn" />
-                        <input type="file" @change="handleImageUpload($event, 'create')"/>
+                        <input type="file" @change="handleImageUpload($event, 'create')" />
                         <input type="date" v-model="createdBook.published" placeholder="Published" />
                         <input v-model="createdBook.publisher" placeholder="Publisher" />
                         <button @click="createBookFunc">Create Book</button>
@@ -41,13 +41,13 @@
 
                     <!-- For PATCH method -->
                     <div v-if="api.method === 'PATCH' && api.url === '/api/books/:id'">
-                        <input v-model="updateBookId" placeholder="Book ID" />
+                        <input type="number" v-model="updateBookId" placeholder="Book ID"/>
                         <input v-model="updateBook.title" placeholder="Title" />
                         <input v-model="updateBook.author" placeholder="Author" />
                         <input v-model="updateBook.genre" placeholder="Genre" />
                         <input v-model="updateBook.desc" placeholder="Description" />
                         <input v-model="updateBook.isbn" placeholder="Isbn" />
-                        <input type="file" @change="handleImageUpload($event, 'update')"/>
+                        <input type="file" @change="handleImageUpload($event, 'update')" />
                         <input type="date" v-model="updateBook.published" placeholder="Published" />
                         <input v-model="updateBook.publisher" placeholder="Publisher" />
                         <button @click="updateBookFunc">Update Book</button>
@@ -73,7 +73,7 @@
                     </div>
 
                     <!-- For Reset method -->
-                    <div v-if="api.method === 'POST' && api.url === '/api/reset'">
+                    <div v-if="api.method === 'POST' && api.url === '/api/books/reset'">
                         <button @click="resetBooks">Reset Books</button>
                         <div v-if="responseMessage">
                             <h4>Response:</h4>
@@ -110,7 +110,7 @@ export default {
                 { method: 'POST', url: '/api/books', description: 'Create a new book', open: false },
                 { method: 'PATCH', url: '/api/books/:id', description: 'Update a book by ID', open: false },
                 { method: 'DELETE', url: '/api/books/:id', description: 'Delete a book by ID', open: false },
-                { method: 'POST', url: '/api/reset', description: 'Reset the book list', open: false }
+                { method: 'POST', url: '/api/books/reset', description: 'Reset the book list', open: false }
             ]
         };
     },
@@ -132,7 +132,7 @@ export default {
                 this.updateBook.imageFile = file; // Assign the file to the update imageFile
             }
         },
-        
+
         // Fetch all books
         fetchBooks() {
             axios.get(`${this.apiUrl}/api/books`)
@@ -146,12 +146,29 @@ export default {
 
         // Create a new book
         createBookFunc() {
-            axios.post(`${this.apiUrl}/api/books`, this.createdBook)
+            const formData = new FormData();
+            formData.append('title', this.createdBook.title || "");
+            formData.append('author', this.createdBook.author || "");
+            formData.append('genre', this.createdBook.genre || "");
+            formData.append('desc', this.createdBook.desc || "");
+            formData.append('isbn', this.createdBook.isbn || "");
+            formData.append('published', this.createdBook.published || "");
+            formData.append('publisher', this.createdBook.publisher || "");
+
+            if (this.imageFile) {
+                formData.append('image', this.imageFile);
+            }
+
+            axios.post(`${this.apiUrl}/api/books`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
                 .then(response => {
                     console.log(response.data)
                     this.createdBook = response.data; // Store created book details
                     this.responseMessage = response.data;
-                    this.createdBook = { title: '', author: '', genre: '', desc: '', isbn: '', image: '', published: '', publisher: '' }; // Reset input fields
+                    this.createdBook = { title: '', author: '', genre: '', desc: '', isbn: '', published: '', publisher: '' }; // Reset input fields
                 })
                 .catch(error => {
                     this.responseMessage = error.message;
@@ -160,34 +177,41 @@ export default {
         },
 
         updateBookFunc() {
-            const payload = {};
+            const formData = new FormData();
             // Only add fields that have values
             if (this.updateBook.title) {
-                payload.title = this.updateBook.title;
+                formData.append('title', this.updateBook.title);
             }
             if (this.updateBook.author) {
-                payload.author = this.updateBook.author;
+                formData.append('author', this.updateBook.author);
             }
             if (this.updateBook.genre) {
-                payload.genre = this.updateBook.genre;
+                formData.append('genre', this.updateBook.genre);
             }
             if (this.updateBook.desc) {
-                payload.desc = this.updateBook.desc;
+                formData.append('desc', this.updateBook.desc);
             }
             if (this.updateBook.isbn) {
-                payload.isbn = this.updateBook.isbn;
-            }
-            if (this.updateBook.image) {
-                payload.image = this.updateBook.image;
+                formData.append('isbn', this.updateBook.isbn);
             }
             if (this.updateBook.published) {
-                payload.published = this.updateBook.published;
+                formData.append('published', this.updateBook.published);
             }
             if (this.updateBook.publisher) {
-                payload.publisher = this.updateBook.publisher;
+                formData.append('publisher', this.updateBook.publisher);
             }
 
-            axios.patch(`${this.apiUrl}/api/books/${this.updateBookId}`, this.updateBook)
+            // Handle the image file only if it exists
+            if (this.updateBook.imageFile) {
+                formData.append('image', this.updateBook.imageFile);
+            }
+
+            console.log("formdata", formData)
+            axios.patch(`${this.apiUrl}/api/books/${this.updateBookId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
                 .then(response => {
                     const index = this.books.findIndex(book => book.id === this.updateBookId);
                     if (index !== -1) {
@@ -195,6 +219,7 @@ export default {
                     }
                     this.responseMessage = response.data
                     this.updateBookId = '';
+                    this.updateBook = {};
                 })
                 .catch(error => {
                     this.responseMessage = error.message;
@@ -209,7 +234,7 @@ export default {
                 .then(() => {
                     this.books = this.books.filter(book => book.id !== this.deleteBookId);
                     this.deleteBookId = '';
-                    this.responseMessage = {"message": "Deleted successfully"}
+                    this.responseMessage = { "message": "Deleted successfully" }
                 })
                 .catch(error => {
                     this.responseMessage = error.message;
