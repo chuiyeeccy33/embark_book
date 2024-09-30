@@ -1,5 +1,6 @@
 <template>
     <div class="api-docs">
+        <h1>API Documentation</h1>
         <div class="api-section" v-for="api in apis" :key="api.url">
             <div class="api-header" @click="toggleEndpoint(api)">
                 <span :class="api.method">{{ api.method }}</span> <span>{{ api.url }}</span>
