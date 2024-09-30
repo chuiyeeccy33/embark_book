@@ -9,15 +9,15 @@ import (
 
 // dummy data from faker api
 type Book struct {
-	ID        int    `json: "id"`
-	Title     string `json: "title"`
-	Author    string `json: "author"`
-	Genre     string `json: "genre"`
-	Desc      string `json: "description"`
-	Isbn      string `json: "isbn"`
-	Image     string `json: "image"`
-	Published string `json: "published"`
-	Publisher string `json: "publisher"`
+	ID        int    `json:"id"`
+	Title     string `json:"title"`
+	Author    string `json:"author"`
+	Genre     string `json:"genre"`
+	Desc      string `json:"description"`
+	Isbn      string `json:"isbn"`
+	Image     string `json:"image"`
+	Published string `json:"published"`
+	Publisher string `json:"publisher"`
 }
 
 var books []Book

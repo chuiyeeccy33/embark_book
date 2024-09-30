@@ -31,7 +31,7 @@ func createBook(c *gin.Context) {
 	}
 	newBook.ID = generateNextID()
 	books = append(books, newBook)
-	c.JSON(http.StatusOK, newBook)
+	c.JSON(http.StatusCreated, newBook)
 }
 
 func updateBook(c *gin.Context) {
@@ -41,24 +41,37 @@ func updateBook(c *gin.Context) {
 		return
 	}
 
-	var updatedBook Book
-	if err := c.ShouldBindJSON(&updatedBook); err != nil {
+	var updatedFields map[string]interface{}
+	if err := c.ShouldBindJSON(&updatedFields); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	for i, book := range books {
 		if book.ID == id {
-			books[i] = Book{
-				ID: id, 
-				Title: updatedBook.Title, 
-				Author: updatedBook.Author, 
-				Genre: updatedBook.Genre,
-				Desc: updatedBook.Desc,
-				Isbn: updatedBook.Isbn,
-				Image: updatedBook.Image,
-				Published: updatedBook.Published,
-				Publisher: updatedBook.Publisher,
+			if title, ok := updatedFields["title"]; ok {
+				books[i].Title = title.(string)
+			}
+			if author, ok := updatedFields["author"]; ok {
+				books[i].Author = author.(string)
+			}
+			if genre, ok := updatedFields["genre"]; ok {
+				books[i].Genre = genre.(string)
+			}
+			if desc, ok := updatedFields["desc"]; ok {
+				books[i].Desc = desc.(string)
+			}
+			if isbn, ok := updatedFields["isbn"]; ok {
+				books[i].Isbn = isbn.(string)
+			}
+			if image, ok := updatedFields["image"]; ok {
+				books[i].Image = image.(string)
+			}
+			if published, ok := updatedFields["published"]; ok {
+				books[i].Published = published.(string)
+			}
+			if publisher, ok := updatedFields["publisher"]; ok {
+				books[i].Publisher = publisher.(string)
 			}
 			c.JSON(http.StatusOK, books[i])
 			return
