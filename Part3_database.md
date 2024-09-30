@@ -12,8 +12,6 @@
 
 2. **Filter employees with salary range between 3000 and 4000, then sort them by department code and followed by Name**
 
-    This query retrieves employees with salaries between 3000 and 4000, sorted by department code and employee name.
-
     ```sql
     SELECT * 
     FROM Employee AS a 
