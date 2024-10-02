@@ -1,4 +1,4 @@
-# Part 3: Database
+# Part 3: Database Answers
 
 ## A. 
 1. **Count the total employees for each department code**
@@ -33,6 +33,7 @@
 - `class_name` – `VARCHAR`
 - `subject_id` – Foreign key, references `Subject(subject_id)`
 - `semester_no` – `INT`
+- `year` - `INT`
 
 ### Student Table
 
