@@ -1,2 +1,2 @@
 # Candidate Name
-Chong Chui Yee
+Jasmine Chong
